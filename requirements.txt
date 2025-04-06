@@ -2,3 +2,4 @@ flask
 tensorflow
 scikit-learn
 gunicorn
+flask-cors

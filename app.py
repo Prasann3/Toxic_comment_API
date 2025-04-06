@@ -2,9 +2,9 @@ from flask import Flask, request, jsonify
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pickle
-
+from flask_cors import CORS
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/predict', methods=['POST'])
 def predict():
