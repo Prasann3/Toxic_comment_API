@@ -4,7 +4,8 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pickle
 from flask_cors import CORS
 app = Flask(__name__)
-CORS(app, origins=["https://www.youtube.com"])
+CORS(app, resources={r"/predict": {"origins": "*"}})
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
