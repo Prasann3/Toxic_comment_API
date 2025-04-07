@@ -1,20 +1,21 @@
-from flask import Flask, request, jsonify
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-import pickle
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+
 app = Flask(__name__)
-CORS(app, resources={r"/predict": {"origins": "*"}})
+CORS(app, resources={r"/predict": {"origins": "https://www.youtube.com"}})
 
-
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='https://www.youtube.com', methods=['POST', 'OPTIONS'], allow_headers=["Content-Type"])
 def predict():
+    if request.method == 'OPTIONS':
+        return jsonify({'message': 'CORS preflight success'}), 200
+
     data = request.get_json()
     comment = data.get("comment")
 
     if not comment:
         return jsonify({"error": "No comment provided"}), 400
 
+    # Load tokenizer and model
     with open("tokenizer.pkl", "rb") as f:
         tokenizer = pickle.load(f)
 
@@ -26,7 +27,3 @@ def predict():
     result = {label: float(f"{prob:.3f}") for label, prob in zip(labels, prediction)}
 
     return jsonify({"comment": comment, "predictions": result})
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
