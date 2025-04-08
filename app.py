@@ -4,6 +4,11 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pickle
 
+with open("tokenizer.pkl", "rb") as f:
+        tokenizer = pickle.load(f)
+
+model = load_model('toxicity_model.h5')
+
 app = Flask(__name__)
 CORS(app, resources={r"/predict": {"origins": "https://www.youtube.com"}})
 
@@ -20,11 +25,10 @@ def predict():
         return jsonify({"error": "No comment provided"}), 400
 
     # Load tokenizer and model
-    with open("tokenizer.pkl", "rb") as f:
-        tokenizer = pickle.load(f)
+    
 
     labels = ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']
-    model = load_model('toxicity_model.h5')
+    
     sequence = tokenizer.texts_to_sequences([comment])
     padded = pad_sequences(sequence, maxlen=300)
     prediction = model.predict(padded)[0]
