@@ -22,24 +22,20 @@ app = Flask(__name__)
 CORS(app, resources={r"/predict": {"origins": "https://www.youtube.com"}})
 
 @app.route('/predict', methods=['POST', 'OPTIONS'])
-@cross_origin(origins='https://www.youtube.com', methods=['POST', 'OPTIONS'], allow_headers=["Content-Type"])
+@cross_origin(origin='https://www.youtube.com', methods=['POST', 'OPTIONS'], allow_headers=["Content-Type"])
 def predict():
     # Handle preflight request
     if request.method == 'OPTIONS':
         return jsonify({'message': 'CORS preflight success'}), 200
 
-    # 👇 DEBUG LOGGING
-    print("🟡 Headers:", dict(request.headers))
-    print("🟡 Raw body:", request.data.decode('utf-8'))
-
     try:
         data = request.get_json(force=True)
-        print("🟢 Parsed JSON:", data)
     except Exception as e:
-        print("🔴 JSON Parse Error:", str(e))
+        
         return jsonify({"error": "Invalid JSON"}), 400
 
     comment = data.get("comment", "").strip()
+    print(comment)
     if not comment:
         return jsonify({"error": "No comment provided"}), 400
 
